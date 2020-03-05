@@ -1,0 +1,15 @@
+FROM RUBY:2.6.3
+
+RUN bundle config --global frozen l
+RUN mkdir /PhotoSite2
+WORKDIR /Ruby Project/PhotoSite
+ONBUILD COPY Gemfile /Ruby Project/PhotoSite/Gemfile
+ONBUILD COPY Gemfile.lock /Ruby Project/PhotoSite/Gemfile.lock
+ONBUILD RUN bundle install
+ONBUILD COPY . /Ruby Project/PhotoSite
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
+RUN apt-get update && apt-get install -y --mo-install-recommends nodejs yarn
+
+RUN apt-get -y install sqlite3 libsqlite3-dev
+EXPOSE 3000
+CMD bundle exec rails s -p${PORT} -b '0.0.0.0'
